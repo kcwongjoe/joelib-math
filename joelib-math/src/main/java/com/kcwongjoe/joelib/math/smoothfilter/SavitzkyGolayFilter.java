@@ -10,7 +10,7 @@ import java.util.Arrays;
 import com.kcwongjoe.joelib.JGeneralUtils;
 
 /**
- * Created by JOE Wong on 6/4/2020
+ * Savitzky Golay Filter
  **/
 public class SavitzkyGolayFilter implements SmoothFilter{
 

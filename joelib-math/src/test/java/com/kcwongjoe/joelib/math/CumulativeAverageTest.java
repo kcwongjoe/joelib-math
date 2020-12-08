@@ -7,8 +7,6 @@ import java.util.ArrayList;
 
 public class CumulativeAverageTest {
 
-
-
     @Test public void testCalculate() {
 
         // test int array
