@@ -134,70 +134,42 @@ public class SavitzkyGolayFilter implements SmoothFilter{
 
     /**
      * Apply Savitzky-Golay filter on <code>x</code> with <code>order</code> of polynomial on <code>winSize</code> length of window.
-     * If order = windowSize-1, the filter produces no smoothing. Return NaN if <code>x.length</code> &lt; window size
+     * If order = windowSize-1, the filter produces no smoothing. Return NaN if <code>x.length</code> &lt; window size.  Doees not handle NaN data.
      *
      * @param x data which is without <code>Double.NaN</code>
      * @return Return the smoothed X.
      * @throws NullPointerException     If <code>x</code> or <code>coef</code> is <code>null</code>.
      * @throws IllegalArgumentException If length of <code>x</code> is 0.
      */
+    @Override
     public double[] smooth(double[] x) {
         if (x == null)
-            throw new NullPointerException("x is null.");
+        throw new NullPointerException("x is null.");
         if (x.length == 0)
             throw new IllegalArgumentException("The size of x can't be zero-length.");
-
-        //Get information
-        int halfWindowSize = (int) ((windowSize - 1) / 2.0);
-
         if (x.length < windowSize)
             return JGeneralUtils.nans(x.length);
 
-        double[] result = new double[x.length];
-
-        //Calculate ybegin
-        for (int i = 0; i < halfWindowSize; i++) {
-            result[i] = 0;
-            for (int xi = 0; xi < windowSize; xi++) {
-                result[i] += coefficients[i][xi] * x[xi];
-            }
-        }
-
-        //Calculate ycenter
-        for (int i = halfWindowSize; i < x.length - halfWindowSize; i++) {
-            result[i] = 0;
-            for (int xi = 0; xi < windowSize; xi++) {
-                result[i] += coefficients[halfWindowSize][xi] * x[i + xi - halfWindowSize];
-            }
-        }
-
-        //Calculate yend
-        int endIndex = 1;
-        for (int i = x.length - halfWindowSize; i < x.length; i++) {
-            result[i] = 0;
-            for (int xi = 0; xi < windowSize; xi++) {
-                result[i] += coefficients[halfWindowSize + endIndex][xi] * x[x.length - windowSize + xi];
-            }
-            endIndex++;
-        }
-
-        return result;
+        return smoothCore(x);
     }
 
     /**
      * Apply Savitzky-Golay filter on <code>x</code> with <code>order</code> of polynomial on <code>winSize</code> length of window.
-     * If order = windowSize-1, the filter produces no smoothing.
+     * If order = windowSize-1, the filter produces no smoothing. Return NaN if <code>x.length</code> &lt; window size.
      *
      * @param x data.
      * @return Return the smoothed X.
      * @throws NullPointerException     If <code>x</code> or <code>coef</code> is <code>null</code>.
      * @throws IllegalArgumentException If length of <code>x</code> is 0.
      */
-    public double[] smoothWithNaN(double[] x) {
+    @Override
+    public double[] smooth(double[] x, boolean handleNaN) {
         if (x == null)
             throw new NullPointerException("x is null.");
         if (x.length == 0)
             throw new IllegalArgumentException("The size of x can't be zero-length.");
+        if (x.length < windowSize)
+            return JGeneralUtils.nans(x.length);
 
         //Search NaN Location in x
         ArrayList<Integer> startLoc = new ArrayList<Integer>();
@@ -224,7 +196,7 @@ public class SavitzkyGolayFilter implements SmoothFilter{
             double[] xsubSet = Arrays.copyOfRange(x, startLoc.get(i), endLoc.get(i));
 
             //Apply Savitzky-Golay filter
-            double[] smoothedSubSet = smooth(xsubSet);
+            double[] smoothedSubSet = smoothCore(xsubSet);
 
             //Copy to the result
             int xSubSetIndex = 0;
@@ -232,6 +204,45 @@ public class SavitzkyGolayFilter implements SmoothFilter{
                 result[j] = smoothedSubSet[xSubSetIndex];
                 xSubSetIndex++;
             }
+        }
+
+        return result;
+    }
+
+    /**
+     * Core of smooth function.
+     * @param x x
+     * @return Return the smoothed data
+     */
+    private double[] smoothCore(double[] x) {
+        //Get information
+        int halfWindowSize = (int) ((windowSize - 1) / 2.0);
+        double[] result = new double[x.length];
+
+        //Calculate ybegin
+        for (int i = 0; i < halfWindowSize; i++) {
+            result[i] = 0;
+            for (int xi = 0; xi < windowSize; xi++) {
+                result[i] += coefficients[i][xi] * x[xi];
+            }
+        }
+
+        //Calculate ycenter
+        for (int i = halfWindowSize; i < x.length - halfWindowSize; i++) {
+            result[i] = 0;
+            for (int xi = 0; xi < windowSize; xi++) {
+                result[i] += coefficients[halfWindowSize][xi] * x[i + xi - halfWindowSize];
+            }
+        }
+
+        //Calculate yend
+        int endIndex = 1;
+        for (int i = x.length - halfWindowSize; i < x.length; i++) {
+            result[i] = 0;
+            for (int xi = 0; xi < windowSize; xi++) {
+                result[i] += coefficients[halfWindowSize + endIndex][xi] * x[x.length - windowSize + xi];
+            }
+            endIndex++;
         }
 
         return result;

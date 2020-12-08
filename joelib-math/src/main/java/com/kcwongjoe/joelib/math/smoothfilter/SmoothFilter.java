@@ -6,16 +6,17 @@ package com.kcwongjoe.joelib.math.smoothfilter;
 public interface SmoothFilter {
 
     /**
-     * Smooth
+     * Smooth. It does not handle nan data.
      * @param x Values to be smoothed
      * @return Return the smoothed values
      */
     double[] smooth(double[] x);
 
     /**
-     * Smooth with NaN data.
+     * Smooth
      * @param x Values to be smoothed
+     * @param handleNaN Set it as true to handle nan data.
      * @return Return the smoothed values.
      */
-    double[] smoothWithNaN(double[] x);
+    double[] smooth(double[] x, boolean handleNaN);
 }

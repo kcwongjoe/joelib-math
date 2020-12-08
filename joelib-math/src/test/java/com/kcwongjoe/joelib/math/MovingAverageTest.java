@@ -49,14 +49,14 @@ public class MovingAverageTest {
         double[] x = new double[] { 4, 8, 6, Double.NaN, Double.NaN, Double.NaN, Double.NaN, -1, -2, Double.NaN, -1, 3, 4, 5 };
 
         double[] forwardResult = new double[] { 6, 7, 6, Double.NaN, Double.NaN, -1, -1.5, -1.5, -1.5, 1, 2, 4, Double.NaN, Double.NaN };
-        assertArrayEquals("Fail on forward.", forwardResult, movingAverage.smoothWithNaN(x), 0.001);
+        assertArrayEquals("Fail on forward.", forwardResult, movingAverage.smooth(x, true), 0.001);
 
         movingAverage.setDirection(MovingAverage.CENTRAL);
         double[] centralResult = new double[] { Double.NaN, 6, 7, 6, Double.NaN, Double.NaN, -1, -1.5, -1.5, -1.5, 1, 2, 4, Double.NaN };
-        assertArrayEquals("Fail on central.", centralResult, movingAverage.smoothWithNaN(x), 0.001);
+        assertArrayEquals("Fail on central.", centralResult, movingAverage.smooth(x, true), 0.001);
 
         movingAverage.setDirection(MovingAverage.BACKWARD);
         double[] backwardResult = new double[] { Double.NaN, Double.NaN, 6, 7, 6, Double.NaN, Double.NaN, -1, -1.5, -1.5, -1.5, 1, 2, 4 };
-        assertArrayEquals("Fail on backward.", backwardResult, movingAverage.smoothWithNaN(x), 0.001);
+        assertArrayEquals("Fail on backward.", backwardResult, movingAverage.smooth(x, true), 0.001);
     }
 }

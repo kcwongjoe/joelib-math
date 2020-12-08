@@ -98,8 +98,8 @@ public class MovingAverage implements SmoothFilter {
     }
 
     @Override
-    public double[] smoothWithNaN(double[] x) {
-        return smoothCore(x, true);
+    public double[] smooth(double[] x, boolean handleNaN) {
+        return smoothCore(x, handleNaN);
     }
 
     private double[] smoothCore(double[] x, boolean smoothWithNan) {

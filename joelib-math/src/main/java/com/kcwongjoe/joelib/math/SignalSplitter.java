@@ -55,12 +55,21 @@ public class SignalSplitter {
      * Split x into signal + noise + bias
      * @param x x
      */
-    public void split(double[] x) {
+    public void split(double[] x){
+        split(x, false);
+    }
+
+    /**
+     * Split x into signal + noise + bias
+     * @param x x
+     * @param handleNaN Smooth with NaN data
+     */
+    public void split(double[] x, boolean handleNaN) {
         // Throw Exception
         if (x == null)
             throw new NullPointerException("x can't be null.");
 
-        double[] smoothedX = filter.smooth(x);
+        double[] smoothedX = filter.smooth(x, handleNaN);
         this.noise = JMathUtils.minus(x, smoothedX);
         this.bias = JMathUtils.min(smoothedX);
         this.signal = JMathUtils.minus(smoothedX, this.bias);
