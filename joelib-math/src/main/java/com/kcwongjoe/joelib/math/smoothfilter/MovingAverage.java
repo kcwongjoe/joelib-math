@@ -24,7 +24,6 @@ public class MovingAverage implements SmoothFilter {
      * <p>
      * averageBoundary = true, x = {3,3,3,3,3,3,6,9}, windowSize = 3, result =
      * {3,3,3,3,4,6,5,9}
-     * <p>
      */
     public boolean averageBoundary = false;
 
